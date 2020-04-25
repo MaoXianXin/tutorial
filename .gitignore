@@ -1,0 +1,6 @@
+
+*.pth
+
+notebooks/\.ipynb_checkpoints/
+
+notebooks/data/
