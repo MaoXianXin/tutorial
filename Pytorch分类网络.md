@@ -12,6 +12,19 @@ torchvision里面有[内置数据集](https://pytorch.org/docs/stable/torchvisio
 
 # Pytorch分类教程
 
+[网络如何搭建参考来源](https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html#sphx-glr-beginner-blitz-cifar10-tutorial-py)
+
+## 关于分类网络训练和推理的关键点
+
+训练的时候,需要做数据预处理,把像素值缩放到[-1,1],对数据进行shuffle和batch
+推理的时候,需要做数据预处理,把像素值缩放到[-1,1],对数据进行batch
+上面两步属于data pipeline阶段,我们可以朝多线程方向优化速度**(这里需要补充,数据读取多线程还需要查资料)**,不同数据集,预处理方式可能不一样
+
+接下来是网络结构定义,以及损失函数和优化器定义
+
+然后是训练,这里要注意一个点,训练的时候我们一般采用GPU,所以需要把数据和网络都传到GPU设备上
+在推理的时候,我们可以把数据和网络都放在CPU上,就是速度会慢些
+
 官方给的是这么一个[tutorial](https://pytorch.org/tutorials/_downloads/17a7c7cb80916fcdf921097825a0f562/cifar10_tutorial.ipynb),文件我已经下载到本地了,在notebooks文件夹下的**cifar10_tutorial.ipynb**,我要做的是在这上面进行改进,下面是我的一些概要:
 
 1. 数据加载方面的I/O,对应于num_workers参数
@@ -54,7 +67,56 @@ transfer learning的话,官方是替换掉最后一层的全连接,从而实现�
 
 ## 显存优化
 
+三篇参考文章:
 
+[浅谈深度学习:如何计算模型以及中间变量的显存占用大小](https://oldpan.me/archives/how-to-calculate-gpu-memory)
+
+[如何在Pytorch中精细化利用显存](https://oldpan.me/archives/how-to-use-memory-pytorch)
+
+[再次浅谈Pytorch中的显存利用问题(附完善显存跟踪代码)](https://oldpan.me/archives/pytorch-gpu-memory-usage-track)
+
+卷积核参数,output_feature_map,forward和backward过程中产生的中间变量,优化器,主要是这几个点占用显存
+
+
+
+占用显存比较多空间的并不是我们输入图像,而是神经网络中的中间变量以及使用optimizer算法时产生的巨量的中间参数
+
+中间变量在backward的时候会翻倍
+
+比如及时清空中间变量,优化代码,减少batch
+
+消费级显卡对单精度计算有优化,服务器级别显卡对双精度计算有优化
+
+比较需要注意的点是模型准确率不能降太多
+
+CPU调用和GPU调用优化问题
+
+其实用实验管理工具就可以监测CPU, GPU利用率,GPU显存,RAM的实时使用情况
+
+
+
+模型权重参数所占用数据量的计算:
+
+这里拿vgg16来举例子,我们可以发现计算出来的数值为527.79M和下载过来的vgg16-397923af.pth大小是一致的
+
+代码的话在notebooks文件夹下的**pytorch_memory_compute.ipynb**
+
+关于[Pytorch-Memory-Utils](https://github.com/Oldpan/Pytorch-Memory-Utils)的利用还得写**(这里需要补充,根据第三篇文章)**
 
 ## 实验管理工具neptune.ai
+
+[官网链接](https://neptune.ai/)
+
+看个案例,然后自己差不多就可以改写了,下面是关键点,自己查一下
+
+```
+import neptune
+
+neptune.init('xianxinmao/sandbox')
+neptune.create_experiment()
+
+neptune.send_metric('batch_loss', loss.data.cpu().numpy())
+```
+
+代码的话在notebooks文件夹下的**cifar10_tutorial _GPU_neptune.ipynb**
 
