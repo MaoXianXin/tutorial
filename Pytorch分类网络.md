@@ -1,3 +1,9 @@
+**该教程内容总结**
+
+手敲了一遍代码，同时进行一些想法实验，对教程添加详细注释和补充，资料来源也给了相应链接，Pytorch分类，CPU版本，GPU版本，复杂网络迁移学习版本(存在2种方式，freeze or not feature extraction layer)，添加Accuracy和Recall等常见评价指标(可以引入confusion matrix)，对ResNet,DenseNet等复杂网络，利用Tensorboard进行可视化，相对于看代码来说，简洁明了，还有一部分如何计算Pytorch内存占用的内容，以上为目前Pytorch分类教程已完成的内容
+
+
+
 数据处理流程一般是numpy->tensor
 
 torchvision里面有[内置数据集](https://pytorch.org/docs/stable/torchvision/datasets.html#),比如mnist, cifar10, flickr等等
@@ -25,7 +31,7 @@ torchvision里面有[内置数据集](https://pytorch.org/docs/stable/torchvisio
 然后是训练,这里要注意一个点,训练的时候我们一般采用GPU,所以需要把数据和网络都传到GPU设备上
 在推理的时候,我们可以把数据和网络都放在CPU上,就是速度会慢些
 
-官方给的是这么一个[tutorial](https://pytorch.org/tutorials/_downloads/17a7c7cb80916fcdf921097825a0f562/cifar10_tutorial.ipynb),文件我已经下载到本地了,在notebooks文件夹下的**cifar10_tutorial.ipynb**,我要做的是在这上面进行改进,下面是我的一些概要:
+官方给的是这么一个[tutorial](https://pytorch.org/tutorials/_downloads/17a7c7cb80916fcdf921097825a0f562/cifar10_tutorial.ipynb),文件我已经下载到本地了,在notebooks文件夹下的**Pytorch_cifar10_CPU_Accuracy_Recall.ipynb**,我要做的是在这上面进行改进,下面是我的一些概要:
 
 1. 数据加载方面的I/O,对应于num_workers参数
 
@@ -43,7 +49,7 @@ torchvision里面有[内置数据集](https://pytorch.org/docs/stable/torchvisio
 2. 要把训练用的数据也传到GPU设备上
 3. 预测的时候使用的是CPU,先把模型保存成.pth,再进行加载预测
 
-代码看notebooks文件夹下的**cifar10_tutorial _GPU.ipynb**
+代码看notebooks文件夹下的**Pytorch_cifar10_GPU_VGG_Accuracy_Recall.ipynb**
 
 ## 第二步-使用复杂网络VGG等
 
@@ -63,7 +69,7 @@ model处于eval还是training状态对模型的影响,下面这句话解释的�
 
 transfer learning的话,官方是替换掉最后一层的全连接,从而实现把原来的1000分类,换成2分类,而且还使用了预训练过的参数作为初始化,大大缩短训练时间
 
-代码的话,在notebooks文件夹下的**transfer_learning_tutorial.ipynb**
+代码的话,在notebooks文件夹下的**Pytorch_transfer_learning_freeze_layer_or_not_model_eval_or_training.ipynb**
 
 ## 显存优化
 
@@ -99,11 +105,15 @@ CPU调用和GPU调用优化问题
 
 这里拿vgg16来举例子,我们可以发现计算出来的数值为527.79M和下载过来的vgg16-397923af.pth大小是一致的
 
-代码的话在notebooks文件夹下的**pytorch_memory_compute.ipynb**
+代码的话在notebooks文件夹下的**Pytorch_memory_compute.ipynb**
 
 关于[Pytorch-Memory-Utils](https://github.com/Oldpan/Pytorch-Memory-Utils)的利用还得写**(这里需要补充,根据第三篇文章)**
 
-## 实验管理工具neptune.ai
+## 利用Tensorboard对复杂网络进行可视化
+
+代码在notebooks文件夹下的**Pytorch_tensorboard_summary.ipynb**
+
+## 实验管理工具neptune.ai(已放弃)
 
 [官网链接](https://neptune.ai/)
 
