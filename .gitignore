@@ -9,3 +9,9 @@ notebooks/data/
 notebooks/runs/fashion_mnist_experiment_1/
 
 notebooks/runs/transfer_learning/
+
+*.7z
+
+*.xz
+
+*.zip
