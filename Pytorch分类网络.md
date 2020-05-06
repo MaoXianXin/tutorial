@@ -113,6 +113,10 @@ CPU调用和GPU调用优化问题
 
 代码在notebooks文件夹下的**Pytorch_tensorboard_summary.ipynb**
 
+## Pruning内容
+
+代码在notebooks文件夹下的**Pytorch_pruning_global_or_local_modelSave.ipynb**
+
 ## 实验管理工具neptune.ai(已放弃)
 
 [官网链接](https://neptune.ai/)

@@ -9,16 +9,6 @@
 + PocketFlow
 + distiller
 
-
-
-实验环境是在Anaconda里搭建的
-
-1. conda install cudatoolkit=10.1
-2. pip install tf-nightly-gpu
-3. pip install --upgrade tensorflow-model-optimization
-
-按照上面三步走，我们就可以安装好环境了
-
 官方提供的有post-training quantization, quantization aware training, and pruning
 
 the starting point to use our training APIs is a Keras training script, which can be optionally initialized from a pre-trained Keras model to further fine tune
