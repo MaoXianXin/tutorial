@@ -15,3 +15,5 @@ notebooks/runs/transfer_learning/
 *.xz
 
 *.zip
+
+.idea/
