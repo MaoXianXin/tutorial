@@ -69,7 +69,7 @@ model处于eval还是training状态对模型的影响,下面这句话解释的�
 
 transfer learning的话,官方是替换掉最后一层的全连接,从而实现把原来的1000分类,换成2分类,而且还使用了预训练过的参数作为初始化,大大缩短训练时间
 
-代码的话,在notebooks文件夹下的**Pytorch_transfer_learning_freeze_layer_or_not_model_eval_or_training.ipynb**
+代码的话,在notebooks文件夹下　的**Pytorch_transfer_learning_freeze_layer_or_not_model_eval_or_training.ipynb**
 
 ## 显存优化
 
