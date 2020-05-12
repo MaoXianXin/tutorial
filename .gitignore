@@ -17,3 +17,5 @@ notebooks/runs/transfer_learning/
 *.zip
 
 .idea/
+
+notebooks/runs/network_visualization/
