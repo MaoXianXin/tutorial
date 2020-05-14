@@ -19,3 +19,5 @@ notebooks/runs/transfer_learning/
 .idea/
 
 notebooks/runs/network_visualization/
+
+*.tflite
