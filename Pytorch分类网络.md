@@ -1,6 +1,6 @@
 **该教程内容总结**
 
-手敲了一遍代码，同时进行一些想法实验，对教程添加详细注释和补充，资料来源也给了相应链接，Pytorch分类，CPU版本，GPU版本，复杂网络迁移学习版本(存在2种方式，freeze or not feature extraction layer)，添加Accuracy和Recall等常见评价指标(可以引入confusion matrix)，对ResNet,DenseNet等复杂网络，利用Tensorboard进行可视化，以及Pruning部分内容，相对于看代码来说，简洁明了，还有一部分如何计算Pytorch内存占用的内容，以上为目前Pytorch分类教程已完成的内容
+手敲了一遍代码，同时进行一些想法实验，对教程添加详细注释和补充，资料来源也给了相应链接，Pytorch分类，CPU版本，GPU版本，复杂网络迁移学习版本(存在2种方式，freeze or not feature extraction layer)，添加Accuracy和Recall等常见评价指标(可以引入confusion matrix)，对ResNet,DenseNet等复杂网络，利用Tensorboard进行可视化，相对于看代码来说，简洁明了，以及Pruning部分内容，还有一部分如何计算Pytorch内存占用的内容，以上为目前Pytorch分类教程已完成的内容
 
 
 
@@ -39,7 +39,7 @@ torchvision里面有[内置数据集](https://pytorch.org/docs/stable/torchvisio
 
 3. 在CPU上训练模型的,未调用GPU,不过有个点要注意,简单的模型其实在GPU上加速不明显
 
-4. 计算了每个类别的预测准确率,这个地方我觉得比较好
+4. 计算了每个类别的预测准确率(属于Recall),这个地方我觉得比较好
 
 ## 利用GPU训练模型
 
@@ -61,7 +61,7 @@ torchvision里面有[内置数据集](https://pytorch.org/docs/stable/torchvisio
 
 model.training可以用于查看模型处于eval状态还是training状态
 
-model处于eval还是training状态对模型的影响,下面这句话解释的不错:model.train() and model.eval() are flags that tell the model that you are training the model and testing mode respectively. This will make the model behave accordingly to techniques such us **dropout** that have different procedures in train and testing mode.
+model处于eval还是training状态对模型的影响,下面这句话解释的不错:model.train() and model.eval() are flags that tell the model that you are training the model and testing mode respectively. This will make the model behave accordingly to techniques such as **dropout** that have different procedures in train and testing mode.
 
 特征提取模块是否freeze
 

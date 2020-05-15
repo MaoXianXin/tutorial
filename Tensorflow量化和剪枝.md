@@ -23,9 +23,9 @@ sparse models are easier to compress, and we can skip the zeroes during inferenc
 4. 将剪枝后的模型转化成TFlite格式，并验证准确率损失
 5. Pruning结合post-training quantization技术
 
-代码在notebooks下的**TensorflowPruningWithTansferLearningAndQuantization.ipynb**
+代码在notebooks下的**TensorflowLitePruningWithWeightQuantizationKeras2TFlite.ipynb**
 
-对于INT8量化的话，代码在notebooks下的**TensorflowIntegerQuantization.ipynb**
+对于INT8量化的话，代码在notebooks下的**TensorflowLiteIntegerQuantizationKeras2TFlite.ipynb**
 
 
 

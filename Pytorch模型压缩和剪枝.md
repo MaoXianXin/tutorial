@@ -1,3 +1,11 @@
+# 剪枝笔记
+
+一个典型的network pruning过程, 有3个stage:
+
+1. train a large, over-parameterized model
+2. prune the trained large model according to a certain criterion
+3. fine-tune the pruned model to regain the lost performance
+
 # 探索Pytorch官网时发现的有意思的东西
 
 [Pytorch Hub, SSD By NVIDIA](https://pytorch.org/hub/nvidia_deeplearningexamples_ssd/),
