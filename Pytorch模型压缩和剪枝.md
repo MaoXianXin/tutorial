@@ -1,9 +1,8 @@
-模型加速算法体系主要有5个方向:
+模型加速算法体系主要有4个方向:
 
 1. pruning(会用就好)
 2. quantization(值得研究)
 3. knowledge distillation(值得研究)
-4. low-rank decomposition(暂时不考虑)
 5. compact architecture design(值得研究)
 
 压缩/加速一个模型是为了更好的让其进行部署，譬如部署到手机，FPGA，无人机上去
@@ -36,6 +35,48 @@
 自动剪枝算法的价值可以被视为搜索高效的架构(看能不能和NAS结合)
 
 假如每一层剪枝比例不一定，比如提出一种全局的评价指标，然后剪枝，那剪枝很有存在的必要
+
+1. weight sharing and quantization
+
+2. pruning(pruning connections, pruning neurons)
+
+3. binary/ternary net
+
+4. winograd transformation
+
+the ranking, for example, can be done according to the L1/L2 norm of neuron weights. after the pruning, the accuracy will drop(hopefully not too much if the ranking is clever), and the network is usually trained-pruned-trained-pruned iteratively to recover. if we prune too much as once, the network might be damaged so much, it won't be able to recover. so in practice, this is an iterative process--often called 'iterative pruning': prune/train/repeat
+
+# 剪枝模块的内容
+
+1. filter pruning
+
+![Selection_113](pics/Selection_113.png)
+
+2. channel pruning
+
+![Selection_114](pics/Selection_114.png)
+
+3. weight pruning(elementwise pruning)
+
+![Selection_115](pics/Selection_115.png)
+
+4. weight decay(通过向目标函数中加入L1正则项，使模型参数稀疏化，再对趋于0值的参数进行裁剪)
+
+5. iterative pruning(trained-pruned-trained-pruned)
+
+6. dynamic pruning
+
+# 量化模块的内容
+
+1. INT8量化
+2. FP16量化+Tensor Core
+
+# 紧凑网络结构设计
+
+1. MobileNet
+2. ShuffleNet
+3. DenseNet
+4. SqueezeNet
 
 # 探索Pytorch官网时发现的有意思的东西
 
