@@ -19,6 +19,44 @@
 
 
 
+# Pytorch剪枝代码总结
+
+1. torch.nn.utils.prune.random_unstructured
+
+Prunes tensor corresponding to parameter called 'name' in 'module' by removing the specified 'amount' of (currently unpruned) units selected at random
+
+2. torch.nn.utils.prune.l1_unstructured
+
+Prunes tensor corresponding to parameter called 'name' in 'module' by removing the specified 'amount' of (currently unpruned) units with the lowest L1-norm
+
+3. torch.nn.utils.prune.random_structured
+
+Prunes tensor corresponding to parameter called 'name' in 'module' by removing the specified 'amount' of (corrently unpruned) channels along the specified 'dim' selected at random
+
+4. torch.nn.utils.prune.ln_structured
+
+Prunes tensor corresponding to parameter called 'name' in 'module' by removing the specified 'amount' of (currently unpruned) channels along the specified 'dim' with the lowest L 'n'-norm
+
+5. torch.nn.utils.prune.global_unstructured
+
+Globally prunes tensors corresponding to all parameters in 'parameters' by applying the specified 'pruning method'
+
+**以上是剪枝函数**
+
+
+
+1. torch.nn.prune.remove
+
+Removes the pruning reparameterization from a module and the pruning method from the forward hook. the pruned parameter named 'name' remains permanently pruned, and the parameter named 'name+_orig' is removed from the parameter list. Similarly, the buffer named 'name+_mask' is removed from the buffers
+
+
+
+for 'unstructured', the mask will be computed from the raveled list of nonmasked entries
+
+for 'structured', the mask will be computed from the nonmasked channels in the tensor
+
+for 'global', the mask will be computed across all entries
+
 # 剪枝笔记
 
 一个典型的network pruning过程, 有3个stage:
