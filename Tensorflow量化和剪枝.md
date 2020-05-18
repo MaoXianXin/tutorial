@@ -1,6 +1,6 @@
-[当前模型剪枝有哪些可用的开源工具](https://zhuanlan.zhihu.com/p/97451755)
-
 模型剪枝属于模型优化中的重要技术之一
+
+[当前模型剪枝有哪些可用的开源工具](https://zhuanlan.zhihu.com/p/97451755)
 
 工具有以下几个:
 
@@ -23,9 +23,9 @@ sparse models are easier to compress, and we can skip the zeroes during inferenc
 4. 将剪枝后的模型转化成TFlite格式，并验证准确率损失
 5. Pruning结合post-training quantization技术
 
-代码在notebooks下的**TensorflowPruningWithTansferLearningAndQuantization.ipynb**
+代码在notebooks下的**TensorflowLitePruningWithWeightQuantizationKeras2TFlite.ipynb**
 
-对于INT8量化的话，代码在notebooks下的**TensorflowIntegerQuantization.ipynb**
+对于INT8量化的话，代码在notebooks下的**TensorflowLiteIntegerQuantizationKeras2TFlite.ipynb**
 
 
 
@@ -50,7 +50,7 @@ Tensorflow量化训练:
 Quantization and Training of Neural Networks for Efficient Integer-Arithmetic-Only Inference揭示了量化感知训练的诸多细节
 为什么量化是有效的(具有足够好的预测准确度)，尤其是将FP32转换为INT8时已经丢失了信息？直觉解释是神经网络被过度参数化，进而包含足够的冗余信息，裁剪这些冗余信息不会导致明显的准确度下降。相关证据表明对于给定的量化方法，FP32网络和INT8网络之间的准确度差距对于大型网络来说较小，因为大型网络过度参数化的程度更高
 
-## 可能有用的Github上的一些东西:
+# 可能有用的Github上的一些东西
 
 1. [Graph Transform Tool](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/tools/graph_transforms/README.md)
 2. [Convrter command line examples(tensorflow)](https://www.tensorflow.org/lite/convert/cmdline_examples)
