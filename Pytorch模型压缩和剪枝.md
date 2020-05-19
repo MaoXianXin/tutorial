@@ -11,7 +11,7 @@
 
 ![Selection_109](pics/Selection_109.png)
 
-这里有个观点，所以我觉得剪枝技术就到这儿吧(当然也有rethinking-network-pruning论文的影响，所以我对它的观点是，用来获得稀疏网络，压缩的时候可以减小模型体积，至于推断的话，还得看硬件支不支持稀疏矩阵计算加速)，我打算会使用工具库就好，理论研究不打算进行，知乎上的原问题是: [深度学习训练中是否有必要使用L1获得稀疏解](https://www.zhihu.com/question/51822759/answer/675969996)
+这里有个观点，所以我觉得剪枝技术就到这儿吧(当然也有**rethinking-network-pruning**论文的影响，所以我对它的观点是，用来获得稀疏网络，压缩的时候可以减小模型体积，至于推断的话，还得看硬件支不支持稀疏矩阵计算加速)，我打算会使用工具库就好，理论研究不打算进行，知乎上的原问题是: [深度学习训练中是否有必要使用L1获得稀疏解](https://www.zhihu.com/question/51822759/answer/675969996)
 
 下图是别人的观点:
 
@@ -39,7 +39,7 @@ Prunes tensor corresponding to parameter called 'name' in 'module' by removing t
 
 5. torch.nn.utils.prune.global_unstructured
 
-Globally prunes tensors corresponding to all parameters in 'parameters' by applying the specified 'pruning method'
+Globally prunes tensors corresponding to all parameters in 'parameters' by applying the specified 'pruning method'. Since global structured pruning doesn'y make much sense unless the norm is normalized by the size of the parameter, we now limit the scope of global pruing to unstructured methods
 
 **以上是剪枝函数**
 
@@ -67,16 +67,17 @@ for 'global', the mask will be computed across all entries
 
 剪枝主要有两种:
 
-1. 非结构化剪枝，最主要的是individual weight pruning. 但是非结构化的剪枝会导致权重矩阵稀疏，如果没有专门的硬件/库，就不能压缩和加速计算
-2. 结构化剪枝是在chennel或者layer层次上剪枝。channel pruning是最流行的结构化剪枝，因为它在最细粒度的level上运行
+1. **非结构化剪枝**，最主要的是**individual weight pruning**. 但是非结构化的剪枝会导致权重矩阵稀疏，如果没有专门的硬件/库，就不能压缩和加速计算
+2. **结构化剪枝**是在chennel或者layer层次上剪枝。channel pruning是最流行的结构化剪枝，因为它在最细粒度的level上运行
 
-自动剪枝算法的价值可以被视为搜索高效的架构(看能不能和NAS结合)
+**自动剪枝算法**的价值可以被视为搜索高效的架构(看能不能和NAS结合), 所以推荐**global_pruning**
 
 假如每一层剪枝比例不一定，比如提出一种全局的评价指标，然后剪枝，那剪枝很有存在的必要
 
 1. weight sharing and quantization
+2. pruning(pruning connections, pruning neurons)   **推荐pruning connections**
 
-2. pruning(pruning connections, pruning neurons)
+实验代码在notebooks文件夹下的**pruning_weightVSneuron.ipynb**
 
 3. binary/ternary net
 

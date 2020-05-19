@@ -21,3 +21,5 @@ notebooks/runs/transfer_learning/
 notebooks/runs/network_visualization/
 
 *.tflite
+
+notebooks/FashionMNIST/raw/
