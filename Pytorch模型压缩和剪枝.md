@@ -85,6 +85,8 @@ for 'global', the mask will be computed across all entries
 
 the ranking, for example, can be done according to the L1/L2 norm of neuron weights. after the pruning, the accuracy will drop(hopefully not too much if the ranking is clever), and the network is usually trained-pruned-trained-pruned iteratively to recover. if we prune too much as once, the network might be damaged so much, it won't be able to recover. so in practice, this is an iterative process--often called 'iterative pruning': prune/train/repeat
 
+
+
 # 剪枝模块的内容
 
 1. filter pruning
@@ -94,6 +96,10 @@ the ranking, for example, can be done according to the L1/L2 norm of neuron weig
 2. channel pruning
 
 ![Selection_114](pics/Selection_114.png)
+
+虽然论文末尾谈到channel pruning可以应用到模型训练中，但是文章的核心内容还是对训练好的模型进行channel pruning，也就是文章中说的inferece time. 通道剪枝正如其名字channel pruning核心思想是移除一些冗余的channel简化模型. 每个卷积核的维度是ckhkw, kh和kw表示卷积核的size. 通道剪枝的目的就是要把B中的某些通道剪掉，但是剪掉后的B和W的卷积结果能尽可能和C接近. 当删减B中的某些通道时，同时也裁剪了W中与这些通道的对应的卷积核，因此通过剪枝能减小卷积的运算量
+
+参考文章[链接](https://zhuanlan.zhihu.com/p/87791509), 
 
 3. weight pruning(elementwise pruning)
 
