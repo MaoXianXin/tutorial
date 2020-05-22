@@ -1,4 +1,6 @@
-# 分类数据集
+# Tensorflow Dataset
+
+
 
 | 数据集属于哪方面           | 数据集名称          | 数据集大小 | 数据集类别数 |
 | -------------------------- | ------------------- | ---------- | ------------ |
@@ -11,3 +13,15 @@
 | 植物病例分类               | plant_leaves        | 6.81GiB    | 22           |
 | 贴图分类                   | quickdraw_bitmap    | 36.82GiB   | 345          |
 | 手势分类                   | rock_paper_scissors | 219.53MiB  | 3            |
+
+
+
+# Keras(TF2.0)剪枝
+
+| 数据集  | 网络架构 | epochs | Baseline testAcc modelSize  inferenceTime | Baseline_pruned testAcc modelSize inferenceTime | train Time(Tesla P100) |
+| ------- | -------- | ------ | ----------------------------------------- | ----------------------------------------------- | ---------------------- |
+| cifar10 | VGG16    | 500    |                                           |                                                 | 1.53h                  |
+|         |          |        |                                           |                                                 |                        |
+|         |          |        |                                           |                                                 |                        |
+|         |          |        |                                           |                                                 |                        |
+
