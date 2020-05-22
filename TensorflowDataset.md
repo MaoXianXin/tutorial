@@ -72,7 +72,7 @@ with_info: 返回数据集的一些信息，就是metadata里的信息，我们�
 
 ![Selection_024](../Pictures/Selection_024.png)
 
-如果电脑的CPU核心数不多，我建议使用cache，以对数据进行缓存，提高训练速度
+如果电脑的CPU核心数不多，我建议使用cache，以对数据进行缓存，提高训练速度(解决CPU造成的瓶颈)
 
 **不加prefetch的时候的训练速度**
 
