@@ -21,7 +21,6 @@
 | 医学类数据集               | patch_camelyon      | 7.48GiB    | 2            |
 | 场景分类                   | places365_small     | 29.27GiB   | 365          |
 | 植物病例分类               | plant_leaves        | 6.81GiB    | 22           |
-| 贴图分类                   | quickdraw_bitmap    | 36.82GiB   | 345          |
 | 手势分类                   | rock_paper_scissors | 219.53MiB  | 3            |
 
 接下来我们直接看程序，学习如何加载训练模型所需要的训练集和测试集
