@@ -21,3 +21,19 @@ notebooks/runs/transfer_learning/
 notebooks/runs/network_visualization/
 
 *.tflite
+
+notebooks/FashionMNIST/raw/
+
+notebooks/model/
+
+tf2/logs/metrics/
+
+tf2/logs/train/
+
+tf2/logs/validation/
+
+*.h5
+
+tf2/.ipynb_checkpoints/
+
+notebooks/test_tensorflow/.ipynb_checkpoints/

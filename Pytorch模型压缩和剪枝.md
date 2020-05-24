@@ -11,7 +11,7 @@
 
 ![Selection_109](pics/Selection_109.png)
 
-这里有个观点，所以我觉得剪枝技术就到这儿吧(当然也有rethinking-network-pruning论文的影响，所以我对它的观点是，用来获得稀疏网络，压缩的时候可以减小模型体积，至于推断的话，还得看硬件支不支持稀疏矩阵计算加速)，我打算会使用工具库就好，理论研究不打算进行，知乎上的原问题是: [深度学习训练中是否有必要使用L1获得稀疏解](https://www.zhihu.com/question/51822759/answer/675969996)
+这里有个观点，所以我觉得剪枝技术就到这儿吧(当然也有**rethinking-network-pruning**论文的影响，所以我对它的观点是，用来获得稀疏网络，压缩的时候可以减小模型体积，至于推断的话，还得看硬件支不支持稀疏矩阵计算加速)，我打算会使用工具库就好，理论研究不打算进行，知乎上的原问题是: [深度学习训练中是否有必要使用L1获得稀疏解](https://www.zhihu.com/question/51822759/answer/675969996)
 
 下图是别人的观点:
 
@@ -39,7 +39,7 @@ Prunes tensor corresponding to parameter called 'name' in 'module' by removing t
 
 5. torch.nn.utils.prune.global_unstructured
 
-Globally prunes tensors corresponding to all parameters in 'parameters' by applying the specified 'pruning method'
+Globally prunes tensors corresponding to all parameters in 'parameters' by applying the specified 'pruning method'. Since global structured pruning doesn'y make much sense unless the norm is normalized by the size of the parameter, we now limit the scope of global pruing to unstructured methods
 
 **以上是剪枝函数**
 
@@ -67,22 +67,25 @@ for 'global', the mask will be computed across all entries
 
 剪枝主要有两种:
 
-1. 非结构化剪枝，最主要的是individual weight pruning. 但是非结构化的剪枝会导致权重矩阵稀疏，如果没有专门的硬件/库，就不能压缩和加速计算
-2. 结构化剪枝是在chennel或者layer层次上剪枝。channel pruning是最流行的结构化剪枝，因为它在最细粒度的level上运行
+1. **非结构化剪枝**，最主要的是**individual weight pruning**. 但是非结构化的剪枝会导致权重矩阵稀疏，如果没有专门的硬件/库，就不能压缩和加速计算
+2. **结构化剪枝**是在chennel或者layer层次上剪枝。channel pruning是最流行的结构化剪枝，因为它在最细粒度的level上运行
 
-自动剪枝算法的价值可以被视为搜索高效的架构(看能不能和NAS结合)
+**自动剪枝算法**的价值可以被视为搜索高效的架构(看能不能和NAS结合), 所以推荐**global_pruning**
 
 假如每一层剪枝比例不一定，比如提出一种全局的评价指标，然后剪枝，那剪枝很有存在的必要
 
 1. weight sharing and quantization
+2. pruning(pruning connections, pruning neurons)   **推荐pruning connections**
 
-2. pruning(pruning connections, pruning neurons)
+实验代码在notebooks文件夹下的**pruning_weightVSneuron.ipynb**
 
 3. binary/ternary net
 
 4. winograd transformation
 
 the ranking, for example, can be done according to the L1/L2 norm of neuron weights. after the pruning, the accuracy will drop(hopefully not too much if the ranking is clever), and the network is usually trained-pruned-trained-pruned iteratively to recover. if we prune too much as once, the network might be damaged so much, it won't be able to recover. so in practice, this is an iterative process--often called 'iterative pruning': prune/train/repeat
+
+
 
 # 剪枝模块的内容
 
@@ -93,6 +96,10 @@ the ranking, for example, can be done according to the L1/L2 norm of neuron weig
 2. channel pruning
 
 ![Selection_114](pics/Selection_114.png)
+
+虽然论文末尾谈到channel pruning可以应用到模型训练中，但是文章的核心内容还是对训练好的模型进行channel pruning，也就是文章中说的inferece time. 通道剪枝正如其名字channel pruning核心思想是移除一些冗余的channel简化模型. 每个卷积核的维度是ckhkw, kh和kw表示卷积核的size. 通道剪枝的目的就是要把B中的某些通道剪掉，但是剪掉后的B和W的卷积结果能尽可能和C接近. 当删减B中的某些通道时，同时也裁剪了W中与这些通道的对应的卷积核，因此通过剪枝能减小卷积的运算量
+
+参考文章[链接](https://zhuanlan.zhihu.com/p/87791509), 
 
 3. weight pruning(elementwise pruning)
 

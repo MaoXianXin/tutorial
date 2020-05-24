@@ -121,6 +121,14 @@ CPU调用和GPU调用优化问题
 
 **Pytorch_pruning_resnet18_refactor.ipynb**
 
+### 模型后剪枝
+
+1. **pruning_train.ipynb**
+2. **pruning_pruning.ipynb**
+3. **pruning_eval.ipynb**
+
+****
+
 ## 实验管理工具neptune.ai(已放弃)
 
 [官网链接](https://neptune.ai/)
