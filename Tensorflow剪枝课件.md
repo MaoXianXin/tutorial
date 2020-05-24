@@ -79,3 +79,57 @@ with_info: 返回数据集的一些信息，就是metadata里的信息，我们�
 
 ![Selection_022](pics/Selection_022.png)
 
+
+
+
+
+## 对模型进行剪枝
+
+模型剪枝属于模型优化中的重要技术之一
+
+当前比较主流的几个模型优化工具有:
+
++ Tensorflow Model Optimization Toolkit(谷歌)
++ PaddleSlim(百度)
++ PocketFlow(腾讯)
++ Distiller(Pytorch)
+
+接下来我们说一下剪枝的灵感来源，看下面这段文字描述和图
+
+![Selection_032](pics/Selection_032.png)
+
+State-of-the-art deep learning techniques rely on over-parametrized models that are hard to deploy.(我们知道自从2012年的AlexNet在ImageNet上取得成功之后，网络就开始朝着越来越深和越来越宽的方向发展，也就是我们经常所说的网络变得越来越大，这是造成过参数化的原因) On the contrary, biological nerual networks are known to use efficient sparse connectivity(这里举的例子是人的孩儿时代，青少年时代，成年时代，我们知道神经网络早期叫perceptron，后来发展到MLP，之后DNN，以及现在的CNN之类，神经网络的灵感来源是人的大脑，而我们人的成长，可以看做是对网络的不断修剪)
+
+对于本课程我们使用的Magnitude-weight Pruning，下面是比较形象的示意图:
+
+<img src="pics/Selection_003.png" alt="Selection_003" style="zoom: 50%;" />
+
+注意这里被剪掉的连接，其实是被置0了，因为0和任何数相乘都是零，也就代表这个被剪掉的连接不起作用了
+
+上一节课我们讲了如何建立DataPipeline，这节课我们来讲讲Model Build和Model train and eval
+
+首先说一下，我们采用的分类网络是VGG16，下图是一个简单的结构展示图
+
+![Selection_031](pics/Selection_031.png)
+
+一个分类网络分为两部分，特征提取模块和分类器模块，我们可以发现分类器模块的全连接层被修改过，最后一层的输出神经元个数契合所使用数据集的分类数
+
+接下来我们直接看程序，先说一下大概流程:
+
+1. 训练Baseline Model
+2. 对Baseline Model进行Prune，得到Baseline_pruned Model
+3. 训练Baseline_pruned Model
+4. 对比Baseline Model和Baseline_pruned Model的test acc, model size, inference time
+
+下面是训练结果统计表
+
+| 数据集  | 网络架构 | epochs | Baseline testAcc modelSize  inferenceTime | Baseline_pruned testAcc modelSize inferenceTime 80%稀疏度 | train Time(Tesla P100) |
+| ------- | -------- | ------ | ----------------------------------------- | --------------------------------------------------------- | ---------------------- |
+| cifar10 | VGG16    | 500    | 0.633\|54.98Mib\|7ms/step                 | 0.581\|17.31Mib\|7ms/step                                 | 1.53h                  |
+|         |          |        |                                           |                                                           |                        |
+|         |          |        |                                           |                                                           |                        |
+|         |          |        |                                           |                                                           |                        |
+
+所以我们可以发现，剪枝最主要的目的是进行模型压缩，对于VGG16来说，压缩倍数大概是3x，然后的话准确率会有所下降，推断速度没有提升(如果有特定硬件或者函数库支持稀疏矩阵运算的话，会有提升)
+
+最后的话，再放一篇论文，感兴趣的同学可以去阅读一下，[To prune, or not to prune: exploring the efficacy of pruning for model compression](https://arxiv.org/pdf/1710.01878.pdf)
