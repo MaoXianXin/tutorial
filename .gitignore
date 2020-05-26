@@ -37,3 +37,5 @@ tf2/logs/validation/
 tf2/.ipynb_checkpoints/
 
 notebooks/test_tensorflow/.ipynb_checkpoints/
+
+*.jpg
