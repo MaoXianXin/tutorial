@@ -59,6 +59,8 @@ with_info: 返回数据集的一些信息，就是metadata里的信息，我们�
 
 上图中count=0是因为在3.1中我们已经迭代完raw_train_numpy里的数据了，所以3.2这里再次迭代统计数据个数的时候，结果为0，这个还可以和OptionsDataset对比下
 
+![Selection_068](pics/Selection_068.png)
+
 ## 加了prefetch可以加快训练速度(IO方面优化)
 
 **加了prefetch之后的训练速度**
@@ -121,7 +123,7 @@ State-of-the-art deep learning techniques rely on over-parametrized models that 
 3. 训练Baseline_pruned Model
 4. 对比Baseline Model和Baseline_pruned Model的test acc, model size, inference time
 
-下面是训练结果统计表
+下面是训练结果统计表，**有时间的话完善一下，待填坑**
 
 | 数据集  | 网络架构 | epochs | Baseline testAcc modelSize  inferenceTime | Baseline_pruned testAcc modelSize inferenceTime 80%稀疏度 | train Time(Tesla P100) |
 | ------- | -------- | ------ | ----------------------------------------- | --------------------------------------------------------- | ---------------------- |
