@@ -23,7 +23,7 @@
 | 植物病例分类               | plant_leaves        | 6.81GiB    | 22           |
 | 手势分类                   | rock_paper_scissors | 219.53MiB  | 3            |
 
-接下来我们直接看程序，学习如何加载训练模型所需要的训练集和测试集
+接下来我们直接看程序，学习如何加载训练模型所需要的训练集和测试集，**想把这里的数据集都测一遍，还没做**
 
 ## 解释tfds.load()
 
@@ -123,7 +123,7 @@ State-of-the-art deep learning techniques rely on over-parametrized models that 
 3. 训练Baseline_pruned Model
 4. 对比Baseline Model和Baseline_pruned Model的test acc, model size, inference time
 
-下面是训练结果统计表，**有时间的话完善一下，待填坑**
+下面是训练结果统计表，**有时间的话完善一下，待填坑**，**构建网络的话可以加入数据增强模块和数据归一化处理和正则化手段，以提高acc**
 
 | 数据集  | 网络架构 | epochs | Baseline testAcc modelSize  inferenceTime | Baseline_pruned testAcc modelSize inferenceTime 80%稀疏度 | train Time(Tesla P100) |
 | ------- | -------- | ------ | ----------------------------------------- | --------------------------------------------------------- | ---------------------- |
