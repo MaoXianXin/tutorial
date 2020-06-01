@@ -125,12 +125,12 @@ State-of-the-art deep learning techniques rely on over-parametrized models that 
 
 下面是训练结果统计表，**有时间的话完善一下，待填坑**，**构建网络的话可以加入数据增强模块和数据归一化处理和正则化手段，以提高acc**
 
-| 数据集  | 网络架构 | epochs | Baseline testAcc modelSize  inferenceTime | Baseline_pruned testAcc modelSize inferenceTime 80%稀疏度 | train Time(Tesla P100) |
-| ------- | -------- | ------ | ----------------------------------------- | --------------------------------------------------------- | ---------------------- |
-| cifar10 | VGG16    | 500    | 0.633\|54.98Mib\|7ms/step                 | 0.581\|17.31Mib\|7ms/step                                 | 1.53h                  |
-|         |          |        |                                           |                                                           |                        |
-|         |          |        |                                           |                                                           |                        |
-|         |          |        |                                           |                                                           |                        |
+| 数据集  | 网络架构 | Baseline testAcc modelSize | Baseline_pruned testAcc modelSize 50%稀疏度 |
+| ------- | -------- | -------------------------- | ------------------------------------------- |
+| cifar10 | VGG16    | 0.8348\|54.98Mib           | 0.8346\|33.55Mib                            |
+|         |          |                            |                                             |
+|         |          |                            |                                             |
+|         |          |                            |                                             |
 
 所以我们可以发现，剪枝最主要的目的是进行模型压缩，对于VGG16来说，压缩倍数大概是3x，然后的话准确率会有所下降，推断速度没有提升(如果有特定硬件或者函数库支持稀疏矩阵运算的话，会有提升)
 
