@@ -45,3 +45,7 @@ notebooks/test_tensorflow/.ipynb_checkpoints/
 Classification/VGG16/logs/train/plugins/profile/2020_06_03_11_20_58/
 
 Classification/VGG16/logs/train/
+
+Classification/LeNet5/logs/train/
+
+Classification/ResNet50/logs/train/
