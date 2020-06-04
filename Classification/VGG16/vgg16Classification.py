@@ -16,11 +16,6 @@ if gpus:
 # 一些参数设置
 layers = tf.keras.layers
 models = tf.keras.models
-keras_utils = tf.keras.utils
-
-WEIGHTS_PATH_NO_TOP = ('https://github.com/fchollet/deep-learning-models/'
-                       'releases/download/v0.1/'
-                       'vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5')  # 此处的预训练模型不带全连接层
 
 # VGG16模型改写用于植物病例分类
 def VGG16(input_shape=(150, 150, 3),
@@ -102,10 +97,7 @@ def VGG16(input_shape=(150, 150, 3),
     outputs = x  # x是输出节点
     model = models.Model(inputs, outputs, name='vgg16')  # 生成一个Model, 需要指定输入和输出节点
 
-    weights_path = keras_utils.get_file(
-        'vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5',  # 此处加载的是不存在全连接层的预训练模型
-        WEIGHTS_PATH_NO_TOP,
-        cache_subdir='models')
+    weights_path = './models/vgg16.h5'
     model.load_weights(weights_path, by_name=True)
     # 加载在ImageNet上预训练过的模型，注意by_name参数很有用，把layer和layer name对应上了
 
@@ -156,7 +148,7 @@ model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=1e-5),
 
 model.fit(
     train_batches,
-    epochs=20,
+    epochs=5,
     callbacks=[tensorboard_callback]
 )
 
