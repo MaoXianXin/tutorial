@@ -90,8 +90,8 @@ def conv_block(input_tensor,
     return x
 
 
-def ResNet50(input_shape=(32, 32, 3),
-             classes=100):
+def ResNet50(input_shape=(224, 224, 3),
+             classes=102):
     img_input = layers.Input(shape=input_shape)  # 输入节点
 
     bn_axis = 3
@@ -137,8 +137,7 @@ def ResNet50(input_shape=(32, 32, 3),
     weights_path = keras_utils.get_file(
         'resnet50_weights_tf_dim_ordering_tf_kernels_notop.h5',  # 此处加载的是不存在全连接层的预训练模型
         WEIGHTS_PATH_NO_TOP,
-        cache_subdir='models',
-        file_hash='6d6bbae143d832006294945121d1f1fc')
+        cache_subdir='models')
     model.load_weights(weights_path, by_name=True)
     # 加载在ImageNet上预训练过的模型，注意by_name参数很有用，把layer和layer name对应上了
 
@@ -154,16 +153,20 @@ tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram
 # 数据增强
 def convert(image, label):
     image = tf.image.convert_image_dtype(image, tf.float32) # Cast and normalize the image to [0,1]
+    image = tf.image.resize_with_crop_or_pad(image, 256, 256) # Add 6 pixels of padding
+    image = tf.image.random_crop(image, size=[224, 224, 3]) # Random crop back to 32x32
     return image, label
 
 def augment(image,label):
     image,label = convert(image, label)
     image = tf.image.random_flip_left_right(image)
+    image = tf.image.random_flip_up_down(image)
+    image = tf.image.random_brightness(image, max_delta=0.5) # Random brightness
     return image,label
 
 # 数据读取并预处理，此处使用tfds的方式构建data pipeline
 (raw_test, raw_train), metadata = tfds.load(
-    'cifar100', # 数据集名称，这个是cifar100分类数据集，共100个类别
+    'caltech101', # 数据集名称，这个是cifar100分类数据集，共100个类别
     split=['test', 'train'], # 这里的raw_test和split的'test'对应，raw_train和split的'train'对应
     with_info=True, # 这个参数和metadata对应
     as_supervised=True, # 这个参数的作用是返回tuple形式的(input, label),举个例子，raw_test=tuple(input, label)
@@ -172,7 +175,7 @@ def augment(image,label):
 )
 
 BATCH_SIZE = 16
-SHUFFLE_BUFFER_SIZE = 25000
+SHUFFLE_BUFFER_SIZE = 2000
 
 # 可以体验下这里是否加prefetch(tf.data.experimental.AUTOTUNE)和cache()的区别，对训练速度，以及CPU负载有影响
 train_batches = raw_train.shuffle(SHUFFLE_BUFFER_SIZE, reshuffle_each_iteration=True).map(augment).batch(BATCH_SIZE).prefetch(tf.data.experimental.AUTOTUNE)
@@ -185,9 +188,17 @@ model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=1e-5),
 
 model.fit(
     train_batches,
-    epochs=200,
+    epochs=50,
     callbacks=[tensorboard_callback]
 )
+
+# 模型训练后预测展示
+get_label_name = metadata.features['label'].int2str
+
+for image, label in raw_test.take(5):
+    image, label = convert(image, label)
+    predict = np.argmax(model.predict(np.expand_dims(image, axis=0)))
+    print(get_label_name(label), ' is ', get_label_name(predict))
 
 # Baseline的test acc，并保存模型
 _, baseline_model_accuracy = model.evaluate(test_batches, verbose=1)
