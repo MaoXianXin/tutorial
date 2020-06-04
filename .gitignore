@@ -53,3 +53,7 @@ Classification/ResNet50/logs/train/
 Classification/LeNet5/tensorflow_datasets/cats_vs_dogs/4.0.0/
 
 Classification/ResNet50/tensorflow_datasets/cifar100/3.0.2/
+
+Classification/LeNet5/tensorflow_datasets/rock_paper_scissors/3.0.0/
+
+Classification/VGG16/tensorflow_datasets/beans/0.1.0/

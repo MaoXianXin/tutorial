@@ -73,7 +73,8 @@ def augment(image,label):
     split=['test', 'train'], # 这里的raw_test和split的'test'对应，raw_train和split的'train'对应
     with_info=True, # 这个参数和metadata对应
     as_supervised=True, # 这个参数的作用是返回tuple形式的(input, label),举个例子，raw_test=tuple(input, label)
-    shuffle_files=True  # 对数据进行扰乱操作，可以自己体会下设置成False时，下面imshow的时候的结果差别
+    shuffle_files=True,  # 对数据进行扰乱操作，可以自己体会下设置成False时，下面imshow的时候的结果差别
+    data_dir='./tensorflow_datasets'
 )
 
 BATCH_SIZE = 4
@@ -93,6 +94,14 @@ model.fit(
     epochs=20,
     callbacks=[tensorboard_callback]
 )
+
+# 训练后的模型预测展示
+get_label_name = metadata.features['label'].int2str
+
+for image, label in raw_test.take(5):
+    image, label = convert(image, label)
+    predict = np.argmax(model.predict(np.expand_dims(image, axis=0)))
+    print(get_label_name(label), ' is ', get_label_name(predict))
 
 # Baseline的test acc,并保存模型
 _, baseline_model_accuracy = model.evaluate(test_batches, verbose=1)
