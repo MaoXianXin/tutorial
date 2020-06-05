@@ -1,8 +1,7 @@
 # 导入函数库
 import tensorflow as tf
 import numpy as np
-from tensorflow import keras  # 在TF2.0版本中,已经是自带Keras了,所以不需要额外安装
-import tensorflow_datasets as tfds # 这个是之前说过的Tensorflow Datasets
+import tensorflow_datasets as tfds # 这个是指Tensorflow Datasets
 
 # 如果出现显存不够的错误，把这个代码加上
 gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -13,12 +12,12 @@ if gpus:
     except RuntimeError as e:
         print(e)
 
-# 一些参数设置
+# 一些网络结构定义参数设置
 layers = tf.keras.layers
 models = tf.keras.models
 
-# VGG16模型改写用于植物病例分类
-def VGG16(input_shape=(150, 150, 3),
+# 定义VGG16模型用于植物病例分类
+def VGG16(input_shape=(150, 150, 3), # 原始图片是500x500x3
           classes=3):
     img_input = layers.Input(shape=input_shape)  # 输入节点
 
@@ -98,8 +97,7 @@ def VGG16(input_shape=(150, 150, 3),
     model = models.Model(inputs, outputs, name='vgg16')  # 生成一个Model, 需要指定输入和输出节点
 
     weights_path = './models/vgg16.h5'
-    model.load_weights(weights_path, by_name=True)
-    # 加载在ImageNet上预训练过的模型，注意by_name参数很有用，把layer和layer name对应上了
+    model.load_weights(weights_path, by_name=True) # 注意by_name参数很有用，把layer和layer name对应上了
 
     return model
 
@@ -117,12 +115,12 @@ def convert(image, label):
     image = tf.image.random_crop(image, size=[150, 150, 3]) # Random crop back to 150x150
     return image, label
 
-def augment(image,label):
-    image,label = convert(image, label)
+def augment(image, label):
+    image, label = convert(image, label)
     image = tf.image.random_flip_left_right(image)
     image = tf.image.random_flip_up_down(image)
-    image = tf.image.random_brightness(image, max_delta=0.5) # Random brightness
-    return image,label
+    image = tf.image.random_brightness(image, max_delta=0.3) # Random brightness
+    return image, label
 
 # 进行数据读取并预处理，此处使用tfds的方式构建data pipeline
 (raw_test, raw_train, raw_validation), metadata = tfds.load(
@@ -130,15 +128,14 @@ def augment(image,label):
     split=['test', 'train', 'validation'], # 这里的raw_test和split的'test'对应，raw_train和split的'train'对应
     with_info=True, # 这个参数和metadata对应
     as_supervised=True, # 这个参数的作用是返回tuple形式的(input, label),举个例子，raw_test=tuple(input, label)
-    shuffle_files=True,  # 对数据进行扰乱操作，可以自己体会下设置成False时，下面imshow的时候的结果差别
     data_dir='./tensorflow_datasets'
 )
 
 BATCH_SIZE = 4
-SHUFFLE_BUFFER_SIZE = 1034
+SHUFFLE_BUFFER_SIZE = 1034 # 原始train_num=1034，把整个数据集加载进内存进行shuffle，效果更好
 
 # 可以体验下这里是否加prefetch(tf.data.experimental.AUTOTUNE)和cache()的区别，对训练速度，以及CPU负载有影响
-train_batches = raw_train.shuffle(SHUFFLE_BUFFER_SIZE, reshuffle_each_iteration=True).map(augment).batch(BATCH_SIZE).prefetch(tf.data.experimental.AUTOTUNE)
+train_batches = raw_train.shuffle(SHUFFLE_BUFFER_SIZE).map(augment).batch(BATCH_SIZE).prefetch(tf.data.experimental.AUTOTUNE)
 test_batches = raw_test.map(convert).batch(BATCH_SIZE)
 
 # 进行模型训练
