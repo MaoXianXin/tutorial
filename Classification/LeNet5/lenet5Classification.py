@@ -72,7 +72,6 @@ def augment(image, label):
     split=['test', 'train'], # 这里的raw_test和split的'test'对应，raw_train和split的'train'对应
     with_info=True, # 这个参数和metadata对应
     as_supervised=True, # 这个参数的作用是返回tuple形式的(input, label),举个例子，raw_test=tuple(input, label)
-    shuffle_files=True,  # 对数据进行扰乱操作，可以自己体会下设置成False时，下面imshow的时候的结果差别
     data_dir='./tensorflow_datasets'
 )
 

@@ -1,8 +1,7 @@
 # 导入函数库
 import tensorflow as tf
 import numpy as np
-from tensorflow import keras  # 在TF2.0版本中,已经是自带Keras了,所以不需要额外安装
-import tensorflow_datasets as tfds # 这个是之前说过的Tensorflow Datasets
+import tensorflow_datasets as tfds # 这个是指Tensorflow Datasets
 
 # 如果出现显存不够的错误，把这个代码加上
 gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -13,11 +12,11 @@ if gpus:
     except RuntimeError as e:
         print(e)
 
-# 一些参数设置
+# 一些网络结构定义参数设置
 layers = tf.keras.layers
 models = tf.keras.models
 
-# 定义ResNet50模型用于caltech101分类
+# 定义ResNet50用于caltech101分类
 def identity_block(input_tensor, kernel_size, filters, stage, block):
     filters1, filters2, filters3 = filters
     bn_axis = 3
@@ -86,7 +85,7 @@ def conv_block(input_tensor,
 
 
 def ResNet50(input_shape=(224, 224, 3),
-             classes=102):
+             classes=102): # 包含background类别，所以总类别是101+1
     img_input = layers.Input(shape=input_shape)  # 输入节点
 
     bn_axis = 3
@@ -130,8 +129,7 @@ def ResNet50(input_shape=(224, 224, 3),
     model = models.Model(inputs, outputs, name='resnet50')  # 生成一个Model, 需要指定输入和输出
 
     weights_path = './models/resnet50.h5'
-    model.load_weights(weights_path, by_name=True)
-    # 加载在ImageNet上预训练过的模型，注意by_name参数很有用，把layer和layer name对应上了
+    model.load_weights(weights_path, by_name=True) # 注意by_name参数很有用，把layer和layer name对应上了
 
     return model
 
@@ -145,29 +143,28 @@ tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram
 # 数据增强
 def convert(image, label):
     image = tf.image.convert_image_dtype(image, tf.float32) # Cast and normalize the image to [0,1]
-    image = tf.image.resize_with_crop_or_pad(image, 256, 256) # Add 6 pixels of padding
-    image = tf.image.random_crop(image, size=[224, 224, 3]) # Random crop back to 32x32
+    image = tf.image.resize_with_crop_or_pad(image, 256, 256)
+    image = tf.image.random_crop(image, size=[224, 224, 3]) # Random crop back to 224x224
     return image, label
 
-def augment(image,label):
-    image,label = convert(image, label)
+def augment(image, label):
+    image, label = convert(image, label)
     image = tf.image.random_flip_left_right(image)
     image = tf.image.random_flip_up_down(image)
-    image = tf.image.random_brightness(image, max_delta=0.5) # Random brightness
-    return image,label
+    image = tf.image.random_brightness(image, max_delta=0.3) # Random brightness
+    return image, label
 
 # 数据读取并预处理，此处使用tfds的方式构建data pipeline
 (raw_test, raw_train), metadata = tfds.load(
-    'caltech101', # 数据集名称，这个是cifar100分类数据集，共100个类别
+    'caltech101', # 数据集名称，这个是caltech101分类数据集，共102个类别(包含background类别)
     split=['test', 'train'], # 这里的raw_test和split的'test'对应，raw_train和split的'train'对应
     with_info=True, # 这个参数和metadata对应
     as_supervised=True, # 这个参数的作用是返回tuple形式的(input, label),举个例子，raw_test=tuple(input, label)
-    shuffle_files=True,
     data_dir='./tensorflow_datasets'
 )
 
 BATCH_SIZE = 16
-SHUFFLE_BUFFER_SIZE = 2000
+SHUFFLE_BUFFER_SIZE = 3060  # 原始train_num=3060，把整个数据集加载进内存进行shuffle，效果更好
 
 # 可以体验下这里是否加prefetch(tf.data.experimental.AUTOTUNE)和cache()的区别，对训练速度，以及CPU负载有影响
 train_batches = raw_train.shuffle(SHUFFLE_BUFFER_SIZE, reshuffle_each_iteration=True).map(augment).batch(BATCH_SIZE).prefetch(tf.data.experimental.AUTOTUNE)
