@@ -59,3 +59,5 @@ Classification/LeNet5/tensorflow_datasets/rock_paper_scissors/3.0.0/
 Classification/VGG16/tensorflow_datasets/beans/0.1.0/
 
 Classification/ResNet50/tensorflow_datasets/caltech101/3.0.0/
+
+Classification/InceptionV3/tensorflow_datasets/caltech101/3.0.0/
