@@ -12,13 +12,23 @@ if gpus:
     except RuntimeError as e:
         print(e)
 
-# 一些网络结构定义参数设置
+# 一些参数设置
 layers = tf.keras.layers
 models = tf.keras.models
 
+IMG_SIZE = 32
+BATCH_SIZE = 8 * 1
+SHUFFLE_BUFFER_SIZE = 48 * 1
+DATASET_NAME = 'rock_paper_scissors'
+SPLIT = ['test', 'train']
+DATA_DIR = './tensorflow_datasets'
+LEARNING_RATE = 1e-4
+EPOCHS = 30
+CLASSES = 3
+
 # 定义LeNet5用于手势识别
-def LeNet5(input_shape=(32, 32, 3), # 原始图片是300x300x3
-           classes=3):
+def LeNet5(input_shape=(IMG_SIZE, IMG_SIZE, 3), # 原始图片是300x300x3
+           classes=CLASSES):
     img_input = layers.Input(shape=input_shape)  # 输入节点
 
     x = layers.Conv2D(64, (5, 5),
@@ -57,7 +67,7 @@ tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram
 # 进行数据增强
 def convert(image, label):
     image = tf.image.convert_image_dtype(image, tf.float32) # Cast and normalize the image to [0,1]
-    image = tf.image.resize(image, size=[32, 32])
+    image = tf.image.resize(image, size=[IMG_SIZE, IMG_SIZE])
     return image, label
 
 def augment(image, label):
@@ -68,28 +78,25 @@ def augment(image, label):
 
 # 数据读取并预处理，此处使用tfds的方式构建data pipeline
 (raw_test, raw_train), metadata = tfds.load(
-    'rock_paper_scissors', # 数据集名称，这个是手势识别分类数据集，共3个类别
-    split=['test', 'train'], # 这里的raw_test和split的'test'对应，raw_train和split的'train'对应
+    DATASET_NAME, # 数据集名称，这个是手势识别分类数据集，共3个类别
+    split=SPLIT, # 这里的raw_test和split的'test'对应，raw_train和split的'train'对应
     with_info=True, # 这个参数和metadata对应
     as_supervised=True, # 这个参数的作用是返回tuple形式的(input, label),举个例子，raw_test=tuple(input, label)
-    data_dir='./tensorflow_datasets'
+    data_dir=DATA_DIR
 )
-
-BATCH_SIZE = 8
-SHUFFLE_BUFFER_SIZE = 2520  # 原始train_num=2520，把整个数据集加载进内存进行shuffle，效果更好
 
 # 可以体验下这里是否加prefetch(tf.data.experimental.AUTOTUNE)和cache()的区别，对训练速度，以及CPU负载有影响
 train_batches = raw_train.shuffle(SHUFFLE_BUFFER_SIZE).map(augment).batch(BATCH_SIZE).prefetch(tf.data.experimental.AUTOTUNE)
 test_batches = raw_test.map(convert).batch(BATCH_SIZE)
 
 # 进行模型训练
-model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=1e-4),
+model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=LEARNING_RATE),
              loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
              metrics=['accuracy'])
 
 model.fit(
     train_batches,
-    epochs=50,
+    epochs=EPOCHS,
     callbacks=[tensorboard_callback]
 )
 
