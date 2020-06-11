@@ -65,3 +65,5 @@ Classification/InceptionV3/tensorflow_datasets/caltech101/3.0.0/
 *.gz
 
 tensorflow_datasets/downloads/
+
+Classification/InceptionV3/tensorflow_datasets/food101/2.0.0/

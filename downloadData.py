@@ -1,7 +1,7 @@
 # 导入函数库
 import tensorflow_datasets as tfds # 这个是指Tensorflow Datasets
 
-SHUFFLE_BUFFER_SIZE = 48 * 1
+# 一些参数设置
 DATASET_NAME = 'food101'
 SPLIT = ['train', 'validation']
 DATA_DIR = './tensorflow_datasets'
