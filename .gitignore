@@ -67,3 +67,17 @@ Classification/InceptionV3/tensorflow_datasets/caltech101/3.0.0/
 tensorflow_datasets/downloads/
 
 Classification/InceptionV3/tensorflow_datasets/food101/2.0.0/
+
+*.yaml
+
+*.commit
+
+*.user
+
+*.type
+
+*.name
+
+Classification/LeNet5/mlruns/0/b477b5b7347b4cce9597afb0fa08a4c4/metrics/
+
+Classification/LeNet5/mlruns/0/b477b5b7347b4cce9597afb0fa08a4c4/params/
