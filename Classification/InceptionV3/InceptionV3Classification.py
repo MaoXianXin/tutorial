@@ -258,7 +258,7 @@ def InceptionV3(input_shape=(IMG_SIZE, IMG_SIZE, 3)):
 pre_trained_model = InceptionV3()
 
 x = layers.GlobalAveragePooling2D()(pre_trained_model.output)
-x = layers.Dense(512, activation='relu', name='fc2')(x)
+x = layers.Dense(512, activation='relu', name='fc1')(x)
 x = layers.Dense(CLASSES, activation='softmax', name='predictions')(x)
 
 model = models.Model(pre_trained_model.input, x)
