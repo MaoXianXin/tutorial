@@ -24,10 +24,10 @@ SHUFFLE_BUFFER_SIZE = 128 * 2
 DATASET_NAME = 'caltech101'
 SPLIT = ['test', 'train']
 DATA_DIR = './tensorflow_datasets'
-LEARNING_RATE = 1e-6
-EPOCHS = 5
+LEARNING_RATE = 1e-4
+EPOCHS = 60
 CLASSES = 102
-weights_path = './models/inceptionv3.h5'
+weights_path = './models/inception_v3_weights_tf_dim_ordering_tf_kernels_notop.h5'
 
 # 定义InceptionV3模型用于caltech101物体分类
 def conv2d_bn(x,
@@ -292,13 +292,13 @@ test_batches = raw_test.map(convert).batch(BATCH_SIZE)
 strategy = tf.distribute.MirroredStrategy()
 with strategy.scope():
     pre_trained_model = InceptionV3()
+    pre_trained_model.load_weights(weights_path)
 
     x = layers.GlobalAveragePooling2D()(pre_trained_model.output)
     x = layers.Dense(512, activation='relu', name='fc1')(x)
     x = layers.Dense(CLASSES, activation='softmax', name='predictions')(x)
 
     model = models.Model(pre_trained_model.input, x)
-    model.load_weights(weights_path)
 
     # 进行模型训练
     model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=LEARNING_RATE),
