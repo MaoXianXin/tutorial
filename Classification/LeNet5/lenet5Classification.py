@@ -3,6 +3,7 @@ import tensorflow as tf
 import numpy as np
 import tensorflow_datasets as tfds # 这个是指Tensorflow Datasets
 import mlflow
+import time
 
 # 如果出现显存不够的错误，把这个代码加上
 gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -18,8 +19,8 @@ layers = tf.keras.layers
 models = tf.keras.models
 
 IMG_SIZE = 32
-BATCH_SIZE = 8 * 1
-SHUFFLE_BUFFER_SIZE = 48 * 1
+BATCH_SIZE = 128 * 1
+SHUFFLE_BUFFER_SIZE = 128 * 1
 DATASET_NAME = 'rock_paper_scissors'
 SPLIT = ['test', 'train']
 DATA_DIR = './tensorflow_datasets'
@@ -94,6 +95,8 @@ test_batches = raw_test.map(convert).batch(BATCH_SIZE)
 model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=LEARNING_RATE),
              loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
              metrics=['accuracy'])
+
+start = time.time()
 with mlflow.start_run():
     mlflow.log_param('IMG_SIZE', str(IMG_SIZE))
     mlflow.log_param('BATCH_SIZE', str(BATCH_SIZE))
@@ -101,6 +104,7 @@ with mlflow.start_run():
     mlflow.log_param('LEARNING_RATE', str(LEARNING_RATE))
     mlflow.log_param('EPOCHS', str(EPOCHS))
     mlflow.log_param('CLASSES', str(CLASSES))
+    mlflow.log_param('OPTIM', 'Adam')
     model.fit(
         train_batches,
         epochs=EPOCHS,
@@ -110,6 +114,8 @@ with mlflow.start_run():
     _, baseline_model_accuracy = model.evaluate(test_batches, verbose=1)
     print('Baseline test accuracy: ', baseline_model_accuracy)
     mlflow.log_metric('testAcc', baseline_model_accuracy)
+    end = time.time()
+    mlflow.log_metric('elapsedTime', end - start)
 
 # 训练后的模型预测展示
 get_label_name = metadata.features['label'].int2str
@@ -119,7 +125,7 @@ for image, label in raw_test.take(5):
     predict = np.argmax(model.predict(np.expand_dims(image, axis=0)))
     print(get_label_name(label), ' is ', get_label_name(predict))
 
-# 并保存模型
+# 保存模型
 keras_file = './test.h5'
 tf.keras.models.save_model(model, keras_file, include_optimizer=False)
 print('Saved baseline model to: ', keras_file)

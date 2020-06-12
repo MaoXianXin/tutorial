@@ -81,3 +81,7 @@ Classification/InceptionV3/tensorflow_datasets/food101/2.0.0/
 Classification/LeNet5/mlruns/0/b477b5b7347b4cce9597afb0fa08a4c4/metrics/
 
 Classification/LeNet5/mlruns/0/b477b5b7347b4cce9597afb0fa08a4c4/params/
+
+Classification/InceptionV3/mlruns/
+
+Classification/LeNet5/mlruns/

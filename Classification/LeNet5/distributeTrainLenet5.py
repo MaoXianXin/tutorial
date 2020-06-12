@@ -1,6 +1,8 @@
 # 导入函数库
 import tensorflow as tf
 import tensorflow_datasets as tfds
+import mlflow
+import time
 
 # 如果出现显存不够的错误，把这个代码加上
 gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -16,13 +18,13 @@ layers = tf.keras.layers
 models = tf.keras.models
 
 IMG_SIZE = 32
-BATCH_SIZE = 4 * 2
-SHUFFLE_BUFFER_SIZE = 12 * 2
+BATCH_SIZE = 64 * 2
+SHUFFLE_BUFFER_SIZE = 64 * 2
 DATASET_NAME = 'rock_paper_scissors'
 SPLIT = ['test', 'train']
 DATA_DIR = './tensorflow_datasets'
 LEARNING_RATE = 1e-4
-EPOCHS = 50
+EPOCHS = 30
 CLASSES = 3
 
 # 定义LeNet5用于手势识别
@@ -90,14 +92,27 @@ with strategy.scope():
                  metrics=['accuracy'])
 
 # 进行模型训练
-model.fit(train_batches,
-         epochs=EPOCHS
-         )
+start = time.time()
+with mlflow.start_run():
+    mlflow.log_param('IMG_SIZE', str(IMG_SIZE))
+    mlflow.log_param('BATCH_SIZE', str(BATCH_SIZE))
+    mlflow.log_param('DATASET_NAME', DATASET_NAME)
+    mlflow.log_param('LEARNING_RATE', str(LEARNING_RATE))
+    mlflow.log_param('EPOCHS', str(EPOCHS))
+    mlflow.log_param('CLASSES', str(CLASSES))
+    mlflow.log_param('OPTIM', 'Adam')
+    model.fit(
+        train_batches,
+        epochs=EPOCHS
+    )
+    # Baseline的test acc
+    _, baseline_model_accuracy = model.evaluate(test_batches, verbose=1)
+    print('Baseline test accuracy: ', baseline_model_accuracy)
+    mlflow.log_metric('testAcc', baseline_model_accuracy)
+    end = time.time()
+    mlflow.log_metric('elapsedTime', end - start)
 
-# Baseline的test acc,并保存模型
-_, baseline_model_accuracy = model.evaluate(test_batches, verbose=1)
-print('Baseline test accuracy: ', baseline_model_accuracy)
-
+# 保存模型
 keras_file = './test.h5'
 tf.keras.models.save_model(model, keras_file, include_optimizer=False)
 print('Saved baseline model to: ', keras_file)
