@@ -1,9 +1,24 @@
-# 导入函数库
+# import packages
 import tensorflow as tf
 import numpy as np
 import tensorflow_datasets as tfds # 这个是指Tensorflow Datasets
 import mlflow
 import time
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--img_size', default=224, type=int)
+parser.add_argument('--batch_size', default=256, type=int)
+parser.add_argument('--shuffle_buffer_size', default=256, type=int)
+parser.add_argument('--dataset_name', default='caltech101', type=str)
+parser.add_argument('--split', default=['test', 'train'], type=list)
+parser.add_argument('--data_dir', default='./tensorflow_datasets', type=str)
+parser.add_argument('--learning_rate', default=1e-4, type=float)
+parser.add_argument('--epochs', default=30, type=int)
+parser.add_argument('--classes', default=102, type=int)
+parser.add_argument('--weights_path', default='./models/inception_v3_weights_tf_dim_ordering_tf_kernels_notop.h5', type=str)
+parser.add_argument('--save_keras_file', default='./test.h5', type=str)
+args = parser.parse_args()
 
 # 如果出现显存不够的错误,把这个代码加上
 gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -17,17 +32,6 @@ if gpus:
 # 一些参数设置
 layers = tf.keras.layers
 models = tf.keras.models
-
-IMG_SIZE = 224
-BATCH_SIZE = 128 * 2
-SHUFFLE_BUFFER_SIZE = 128 * 2
-DATASET_NAME = 'caltech101'
-SPLIT = ['test', 'train']
-DATA_DIR = './tensorflow_datasets'
-LEARNING_RATE = 1e-4
-EPOCHS = 60
-CLASSES = 102
-weights_path = './models/inception_v3_weights_tf_dim_ordering_tf_kernels_notop.h5'
 
 # 定义InceptionV3模型用于caltech101物体分类
 def conv2d_bn(x,
@@ -55,7 +59,7 @@ def conv2d_bn(x,
     return x
 
 
-def InceptionV3(input_shape=(IMG_SIZE, IMG_SIZE, 3)):
+def InceptionV3(input_shape=(args.img_size, args.img_size, 3)):
     img_input = layers.Input(shape=input_shape)
 
     channel_axis = 3
@@ -257,15 +261,12 @@ def InceptionV3(input_shape=(IMG_SIZE, IMG_SIZE, 3)):
 
     return model
 
-# 模型训练日志记录
-log_dir = './logs'
-tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
 
 # 进行数据增强
 def convert(image, label):
     image = tf.image.convert_image_dtype(image, tf.float32) # Cast and normalize the image to [0,1]
-    image = tf.image.resize_with_crop_or_pad(image, IMG_SIZE+32, IMG_SIZE+32)
-    image = tf.image.random_crop(image, size=[IMG_SIZE, IMG_SIZE, 3]) # Random crop back to 224x224
+    image = tf.image.resize_with_crop_or_pad(image, args.img_size+32, args.img_size+32)
+    image = tf.image.random_crop(image, size=[args.img_size, args.img_size, 3]) # Random crop back to 224x224
     return image, label
 
 def augment(image, label):
@@ -275,66 +276,72 @@ def augment(image, label):
     image = tf.image.random_brightness(image, max_delta=0.3) # Random brightness
     return image, label
 
-# 数据读取并预处理，此处使用tfds的方式构建data pipeline
-(raw_test, raw_train), metadata = tfds.load(
-    DATASET_NAME, # 数据集名称，这个是caltech101分类数据集，共102个类别(包含background类别)
-    split=SPLIT, # 这里的raw_test和split的'test'对应，raw_train和split的'train'对应
-    with_info=True, # 这个参数和metadata对应
-    as_supervised=True, # 这个参数的作用是返回tuple形式的(input, label),举个例子，raw_test=tuple(input, label)
-    data_dir=DATA_DIR
-)
-
-
-# 可以体验下这里是否加prefetch(tf.data.experimental.AUTOTUNE)和cache()的区别，对训练速度，以及CPU负载有影响
-train_batches = raw_train.shuffle(SHUFFLE_BUFFER_SIZE).map(augment).batch(BATCH_SIZE).prefetch(tf.data.experimental.AUTOTUNE)
-test_batches = raw_test.map(convert).batch(BATCH_SIZE)
-
-strategy = tf.distribute.MirroredStrategy()
-with strategy.scope():
-    pre_trained_model = InceptionV3()
-    pre_trained_model.load_weights(weights_path)
-
-    x = layers.GlobalAveragePooling2D()(pre_trained_model.output)
-    x = layers.Dense(512, activation='relu', name='fc1')(x)
-    x = layers.Dense(CLASSES, activation='softmax', name='predictions')(x)
-
-    model = models.Model(pre_trained_model.input, x)
-
-    # 进行模型训练
-    model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=LEARNING_RATE),
-                 loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-                 metrics=['accuracy'])
-
-start = time.time()
-with mlflow.start_run():
-    mlflow.log_param('IMG_SIZE', str(IMG_SIZE))
-    mlflow.log_param('BATCH_SIZE', str(BATCH_SIZE))
-    mlflow.log_param('DATASET_NAME', DATASET_NAME)
-    mlflow.log_param('LEARNING_RATE', str(LEARNING_RATE))
-    mlflow.log_param('EPOCHS', str(EPOCHS))
-    mlflow.log_param('CLASSES', str(CLASSES))
-    mlflow.log_param('OPTIM', 'Adam')
-    model.fit(
-        train_batches,
-        epochs=EPOCHS,
-        callbacks=[tensorboard_callback]
+def main():
+    # 数据读取并预处理，此处使用tfds的方式构建data pipeline
+    (raw_test, raw_train), metadata = tfds.load(
+        args.dataset_name, # 数据集名称，这个是caltech101分类数据集，共102个类别(包含background类别)
+        split=args.split, # 这里的raw_test和split的'test'对应，raw_train和split的'train'对应
+        with_info=True, # 这个参数和metadata对应
+        as_supervised=True, # 这个参数的作用是返回tuple形式的(input, label),举个例子，raw_test=tuple(input, label)
+        data_dir=args.data_dir
     )
-    # Baseline的test acc
-    _, baseline_model_accuracy = model.evaluate(test_batches, verbose=1)
-    print('Baseline test accuracy: ', baseline_model_accuracy)
-    mlflow.log_metric('testAcc', baseline_model_accuracy)
-    end = time.time()
-    mlflow.log_metric('elapsedTime', end - start)
 
-# 模型训练后预测展示
-get_label_name = metadata.features['label'].int2str
 
-for image, label in raw_test.take(5):
-    image, label = convert(image, label)
-    predict = np.argmax(model.predict(np.expand_dims(image, axis=0)))
-    print(get_label_name(label), ' is ', get_label_name(predict))
+    # 可以体验下这里是否加prefetch(tf.data.experimental.AUTOTUNE)和cache()的区别，对训练速度，以及CPU负载有影响
+    train_batches = raw_train.shuffle(args.shuffle_buffer_size).map(augment).batch(args.batch_size).prefetch(tf.data.experimental.AUTOTUNE)
+    test_batches = raw_test.map(convert).batch(args.batch_size)
 
-# 并保存模型
-keras_file = './test.h5'
-tf.keras.models.save_model(model, keras_file, include_optimizer=False)
-print('Saved baseline model to: ', keras_file)
+    strategy = tf.distribute.MirroredStrategy()
+    with strategy.scope():
+        pre_trained_model = InceptionV3()
+        pre_trained_model.load_weights(args.weights_path)
+
+        x = layers.GlobalAveragePooling2D()(pre_trained_model.output)
+        x = layers.Dense(512, activation='relu', name='fc1')(x)
+        x = layers.Dense(args.classes, activation='softmax', name='predictions')(x)
+
+        model = models.Model(pre_trained_model.input, x)
+
+        # 进行模型compile
+        model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=args.learning_rate),
+                     loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+                     metrics=['accuracy'])
+
+    start = time.time()
+    # logging parameters
+    with mlflow.start_run():
+        mlflow.log_param('IMG_SIZE', str(args.img_size))
+        mlflow.log_param('BATCH_SIZE', str(args.batch_size))
+        mlflow.log_param('DATASET_NAME', args.dataset_name)
+        mlflow.log_param('LEARNING_RATE', str(args.learning_rate))
+        mlflow.log_param('EPOCHS', str(args.epochs))
+        mlflow.log_param('CLASSES', str(args.classes))
+        mlflow.log_param('OPTIM', 'Adam')
+        # 开启模型训练
+        model.fit(
+            train_batches,
+            epochs=args.epochs
+        )
+        _, trainAcc = model.evaluate(train_batches, verbose=1)
+        mlflow.log_metric('trainAcc', trainAcc)
+        # Baseline的test acc
+        _, baseline_model_accuracy = model.evaluate(test_batches, verbose=1)
+        print('Baseline test accuracy: ', baseline_model_accuracy)
+        mlflow.log_metric('testAcc', baseline_model_accuracy)
+        end = time.time()
+        mlflow.log_metric('elapsedTime', end - start)
+
+    # 模型训练后预测展示
+    get_label_name = metadata.features['label'].int2str
+
+    for image, label in raw_test.take(5):
+        image, label = convert(image, label)
+        predict = np.argmax(model.predict(np.expand_dims(image, axis=0)))
+        print(get_label_name(label), ' is ', get_label_name(predict))
+
+    # 保存模型
+    tf.keras.models.save_model(model, args.save_keras_file, include_optimizer=False)
+    print('Saved baseline model to: ', args.save_keras_file)
+
+if __name__ == '__main__':
+    main()
