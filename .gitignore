@@ -84,4 +84,24 @@ Classification/LeNet5/mlruns/0/b477b5b7347b4cce9597afb0fa08a4c4/params/
 
 Classification/InceptionV3/mlruns/
 
+Classification/ResNet50/mlruns/
+
 Classification/LeNet5/mlruns/
+
+pytorch_model_optimization/Classification/data/MNIST/raw/
+
+pytorch_model_optimization/Classification/data/food-101/meta/
+
+pytorch_model_optimization/Classification/data/cifar-10-batches-py/
+
+pytorch_model_optimization/Classification/data/food-101/
+
+pytorch_model_optimization/Classification/data/hymenoptera_data/train/ants/
+
+pytorch_model_optimization/Classification/data/MNIST/processed/
+
+pytorch_model_optimization/Classification/apex/
+
+pytorch_model_optimization/Classification/data/101_ObjectCategories/BACKGROUND_Google/
+
+Classification/ResNet50/tensorflow_datasets/food101/2.0.0/
