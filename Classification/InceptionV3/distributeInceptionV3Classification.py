@@ -322,14 +322,14 @@ def main():
             train_batches,
             epochs=args.epochs
         )
+        end = time.time()
+        mlflow.log_metric('elapsedTime', end - start)
         _, trainAcc = model.evaluate(train_batches, verbose=1)
         mlflow.log_metric('trainAcc', trainAcc)
         # Baseline的test acc
         _, baseline_model_accuracy = model.evaluate(test_batches, verbose=1)
         print('Baseline test accuracy: ', baseline_model_accuracy)
         mlflow.log_metric('testAcc', baseline_model_accuracy)
-        end = time.time()
-        mlflow.log_metric('elapsedTime', end - start)
 
     # 模型训练后预测展示
     get_label_name = metadata.features['label'].int2str
