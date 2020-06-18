@@ -9,7 +9,7 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('--img_size', default=224, type=int)
 parser.add_argument('--batch_size', default=192, type=int)
-parser.add_argument('--shuffle_buffer_size', default=192, type=int)
+parser.add_argument('--shuffle_buffer_size', default=4, type=int)
 parser.add_argument('--dataset_name', default='food101', type=str)
 parser.add_argument('--split', default=['train', 'validation'], type=list)
 parser.add_argument('--data_dir', default='./tensorflow_datasets', type=str)
@@ -172,7 +172,7 @@ def main():
     )
 
     # 可以体验下这里是否加prefetch(tf.data.experimental.AUTOTUNE)和cache()的区别，对训练速度，以及CPU负载有影响
-    train_batches = raw_train.shuffle(args.shuffle_buffer_size).map(augment).batch(args.batch_size).prefetch(tf.data.experimental.AUTOTUNE)
+    train_batches = raw_train.shuffle(args.shuffle_buffer_size).map(augment, num_parallel_calls=tf.data.experimental.AUTOTUNE, deterministic=False).batch(args.batch_size).prefetch(tf.data.experimental.AUTOTUNE)
     test_batches = raw_validation.map(convert).batch(args.batch_size)
 
     strategy = tf.distribute.MirroredStrategy()
