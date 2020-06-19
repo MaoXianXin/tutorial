@@ -101,3 +101,5 @@ pytorch_model_optimization/Classification/data/MNIST/raw/
 pytorch_model_optimization/Classification/data/101_ObjectCategories/BACKGROUND_Google/
 
 pytorch_model_optimization/Classification/apex/
+
+Classification/ResNet50/tensorflow_datasets/food101/2.0.0/
