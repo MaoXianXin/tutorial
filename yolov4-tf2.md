@@ -53,3 +53,50 @@ cd yolov4-tf2
 # 进行预测
 
 ```python predict.py```
+
+
+
+# 云端训练
+
+![Selection_027](yolov4_img/6.jpg)
+
+![Selection_028](yolov4_img/7.jpg)
+
+![Selection_022](yolov4_img/1.jpg)
+
+![Selection_023](yolov4_img/2.jpg)
+
+![Selection_024](yolov4_img/3.jpg)
+
+![Selection_025](yolov4_img/4.jpg)
+
+## 第一种训练方式(长时间训练容易断网)
+
+![Selection_026](yolov4_img/5.jpg)
+
+## 第二种训练方式(适合长时间训练断网也没事)
+
+![Selection_035](yolov4_img/8.jpg)
+
+![Selection_036](yolov4_img/9.jpg)
+
+# 预测
+
+![Selection_064](yolov4_img/10.jpg)
+
+```
+运行   python predict.py
+```
+
+![Selection_065](yolov4_img/11.jpg)
+
+# 代码解读
+
+## 预测部分
+
+![Selection_091](yolov4_img/12.jpg)
+
+![Selection_092](yolov4_img/13.jpg)
+
+![Selection_093](yolov4_img/16.jpg)
+
